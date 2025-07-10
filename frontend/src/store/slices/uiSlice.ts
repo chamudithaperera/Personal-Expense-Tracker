@@ -1,27 +1,42 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UIState {
-  loading: boolean;
-  error: string | null;
+  activeTab: 'dashboard' | 'expenses';
+  showExpenseForm: boolean;
+  notifications: Array<{
+    id: string;
+    type: 'success' | 'error' | 'info';
+    message: string;
+  }>;
 }
 
 const initialState: UIState = {
-  loading: false,
-  error: null,
+  activeTab: 'dashboard',
+  showExpenseForm: false,
+  notifications: [],
 };
 
 const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    setLoading(state, action: PayloadAction<boolean>) {
-      state.loading = action.payload;
+    setActiveTab: (state, action: PayloadAction<'dashboard' | 'expenses'>) => {
+      state.activeTab = action.payload;
     },
-    setError(state, action: PayloadAction<string | null>) {
-      state.error = action.payload;
+    toggleExpenseForm: (state) => {
+      state.showExpenseForm = !state.showExpenseForm;
+    },
+    addNotification: (state, action: PayloadAction<{ type: 'success' | 'error' | 'info'; message: string }>) => {
+      state.notifications.push({
+        id: Date.now().toString(),
+        ...action.payload,
+      });
+    },
+    removeNotification: (state, action: PayloadAction<string>) => {
+      state.notifications = state.notifications.filter(n => n.id !== action.payload);
     },
   },
 });
 
-export const { setLoading, setError } = uiSlice.actions;
+export const { setActiveTab, toggleExpenseForm, addNotification, removeNotification } = uiSlice.actions;
 export default uiSlice.reducer; 
